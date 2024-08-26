@@ -1,6 +1,7 @@
 from utils.retriever import SectionsRetriever
 import os
 
+
 # Load the retriever
 retriever_obj = SectionsRetriever(
     os.getenv("OLLAMA_MODEL_NAME"), 
