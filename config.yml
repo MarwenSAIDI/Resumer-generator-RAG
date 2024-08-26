@@ -1,0 +1,18 @@
+llm:
+  stop_tokens: ["<|end|>","<|user|>","<|assistant|>"]
+  experience_schema: "{
+    'title': The experience title,
+    'position': The job position occupied,
+    'company': The campany name,
+    'start_date': The start date,
+    'end_date': The last periode in [months] [years] ( if does not exist then write 'Present'),
+    'Tasks': A list tasks where each task is a summary that contains action verbs and metrics 
+  }"
+
+  prompt: "<|system|>You are data engineer working in a recruitment department.
+  You take prompt of people experiences in a job and you extract them based on a
+  schema whilist summarizing the tasks.
+  
+  Schema: {schema}<|end|>
+  
+  <|user|>Experience: {query}<|end|><|assistant|>"
