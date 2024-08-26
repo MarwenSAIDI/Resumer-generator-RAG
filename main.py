@@ -1,8 +1,5 @@
 from utils.retriever import SectionsRetriever
 import os
-from dotenv import load_dotenv
-
-load_dotenv('.env')
 
 # Load the retriever
 retriever_obj = SectionsRetriever(
