@@ -1,5 +1,5 @@
-## What is new
+## What did we do
 
-## Enviroment 
+## Environment setup
 
 ## Validation steps
