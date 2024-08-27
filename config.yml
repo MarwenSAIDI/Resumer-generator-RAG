@@ -1,17 +1,21 @@
 llm:
   stop_tokens: ["<|end|>","<|user|>","<|assistant|>"]
-  experience_schema: "{
+  experience_extraction_schema: "{
     'title': The experience title,
     'position': The job position occupied,
     'company': The campany name,
-    'start_date': The start date,
-    'end_date': The last periode in [months] [years] ( if does not exist then write 'Present'),
-    'Tasks': A list tasks where each task is a summary that contains action verbs and metrics 
+    'start_date': The start date of the experience,
+    'end_date': The end date of the experience ( if does not exist then write 'Present'),
+    'Tasks': A list tasks provided in the query,
+    'Skills': A list of skills present or can be derived from the query,
+    'Tools': A list of tools/technologies used in the tasks 
   }"
 
-  prompt: "<|system|>You are data engineer working in a recruitment department.
+  experience_extraction_prompt: "<|system|>You are data engineer working in a recruitment department.
   You take prompt of people experiences in a job and you extract them based on a
-  schema whilist summarizing the tasks.
+  schema. Make sure to reformulate the tasks when needed by adding action verbs,
+  highlighting the contributions, and keeping metrics if present. Make sure there are no
+  preambles and no hallucination.
   
   Schema: {schema}<|end|>
   

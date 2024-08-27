@@ -29,7 +29,7 @@ class SectionsRetriever:
     
     def process_experience(self, corpus:str) -> str:
         # Create the prompt
-        prompt = PromptTemplate.from_template(self.config["llm"]["prompt"])
+        prompt = PromptTemplate.from_template(self.config["llm"]["experience_extraction_prompt"])
 
-        return self.llm.invoke(prompt.format(schema=self.config["llm"]["experience_schema"], query=corpus))
+        return self.llm.invoke(prompt.format(schema=self.config["llm"]["experience_extraction_schema"], query=corpus))
     
