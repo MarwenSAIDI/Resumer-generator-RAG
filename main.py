@@ -14,4 +14,8 @@ experience="""I worked at the company Lambda ste as an AI engineer starting from
 In my experience I worked on building smart assistance that iproved productivity in our solution by 60%. 
 And I lead a team of 3 engineers and ditributed the work given between them.
 """
-print(retriever_obj.process_experience(experience))
+json_text = retriever_obj.process_experience(experience)
+
+doc = retriever_obj.reconstruct_experience("professional experience", json_text)
+
+print(retriever_obj.create_retriever([doc]))

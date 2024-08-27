@@ -20,3 +20,9 @@ llm:
   Schema: {schema}<|end|>
   
   <|user|>Experience: {query}<|end|><|assistant|>"
+
+  experience_construct_prompt: "<|system|>You are a professionnal write. You take a structures JSON format
+  related to the {section_name} section and reconstruct it into the appropriate block format
+  for the resume.<|end|>
+
+  <|user|>JSON to reconstruct: {json_text}<|end|><|assistant|>"
