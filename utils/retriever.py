@@ -1,11 +1,9 @@
 from langchain_community.embeddings import OllamaEmbeddings
-from langchain_ollama.llms import OllamaLLM
 from langchain_ollama.chat_models import ChatOllama
 from langchain_core.prompts import PromptTemplate
 from langchain_community.vectorstores import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
-import yaml
 
 class SectionsRetriever:
 
