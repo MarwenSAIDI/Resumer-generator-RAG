@@ -1,4 +1,5 @@
 from utils.retriever import SectionsRetriever
+from utils.loaders import load_config
 import os
 from dotenv import load_dotenv
 
@@ -7,11 +8,14 @@ load_dotenv('.env')
 
 print(os.getenv("OLLAMA_URL"))
 
+# load the config file
+config = load_config(os.path.join(os.getcwd(),"config.yml"))
+
 # Load the retriever
 retriever_obj = SectionsRetriever(
     os.getenv("OLLAMA_MODEL_NAME"), 
     os.getenv("OLLAMA_URL"),
-    os.path.join(os.getcwd(),"config.yml")
+    config["retriever_config"]
 )
 
 # Test retriever

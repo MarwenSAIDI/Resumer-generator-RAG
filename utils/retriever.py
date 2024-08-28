@@ -9,13 +9,12 @@ import yaml
 
 class SectionsRetriever:
 
-    def __init__(self,model_name:str, url:str, config_file:str) -> None:
+    def __init__(self,model_name:str, url:str, config_retriever) -> None:
         """
         
         """
         # Load configs
-        with open(config_file, 'r') as stream:
-            self.config = yaml.safe_load(stream)
+        self.config = config_retriever
 
         # Load the embedding model
         self.embedder = OllamaEmbeddings(
@@ -27,18 +26,18 @@ class SectionsRetriever:
         self.llm = ChatOllama(
             model=model_name,
             base_url=url,
-            stop=self.config['llm']['stop_tokens']
+            stop=self.config['stop_tokens']
         )
 
     
     def process_experience(self, corpus:str) -> str:
         # Create the prompt
-        prompt = PromptTemplate.from_template(self.config["llm"]["experience_extraction_prompt"])
+        prompt = PromptTemplate.from_template(self.config["experience_extraction_prompt"])
 
-        return self.llm.invoke(prompt.format(schema=self.config["llm"]["experience_extraction_schema"], query=corpus))
+        return self.llm.invoke(prompt.format(schema=self.config["experience_extraction_schema"], query=corpus))
     
     def reconstruct_experience(self, section_name:str, json_structure:str) -> str:
-        prompt = PromptTemplate.from_template(self.config["llm"]["experience_construct_prompt"])
+        prompt = PromptTemplate.from_template(self.config["experience_construct_prompt"])
 
         return self.llm.invoke(prompt.format(json_text=json_structure, section_name=section_name))
     
