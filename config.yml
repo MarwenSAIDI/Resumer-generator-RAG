@@ -1,5 +1,5 @@
 llm:
-  stop_tokens: ["<|end|>","<|user|>","<|assistant|>"]
+  stop_tokens: ["<|start_header_id|>","<|end_header_id|>","<|eot_id|>"]
   experience_extraction_schema: "{
     'title': The experience title,
     'position': The job position occupied,
@@ -11,18 +11,17 @@ llm:
     'Tools': A list of tools/technologies used in the tasks 
   }"
 
-  experience_extraction_prompt: "<|system|>You are data engineer working in a recruitment department.
+  experience_extraction_prompt: "<|start_header_id|>system<|end_header_id|>You are data engineer working in a recruitment department.
   You take prompt of people experiences in a job and you extract them based on a
   schema. Make sure to reformulate the tasks when needed by adding action verbs,
-  highlighting the contributions, and keeping metrics if present. Make sure there are no
-  preambles and no hallucination.
+  highlighting the contributions, and keeping metrics if present. No preambles return the JSON file.
   
-  Schema: {schema}<|end|>
+  Schema: {schema}<|eot_id|>
   
-  <|user|>Experience: {query}<|end|><|assistant|>"
+  <|start_header_id|>user<|end_header_id|>Experience: {query}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
 
-  experience_construct_prompt: "<|system|>You are a professionnal write. You take a structures JSON format
+  experience_construct_prompt: "<|start_header_id|>system<|end_header_id|>You are a professionnal write. You take a structures JSON format
   related to the {section_name} section and reconstruct it into the appropriate block format
-  for the resume.<|end|>
+  for the resume. No preambles and no extra details<|eot_id|>
 
-  <|user|>JSON to reconstruct: {json_text}<|end|><|assistant|>"
+  <|start_header_id|>user<|end_header_id|>JSON to reconstruct: {json_text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
