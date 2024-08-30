@@ -1,29 +1,25 @@
-from utils.retriever import SectionsRetriever
-from utils.loaders import load_config
+""" In this main file we test the functionalities built. """
+
 import os
 from dotenv import load_dotenv
+from utils.retriever import SectionsRetriever
+from utils.loaders import load_config
 
 load_dotenv('.env')
-
-
-print(os.getenv("OLLAMA_URL"))
 
 # load the config file
 config = load_config(os.path.join(os.getcwd(),"config.yml"))
 
+OLLAMA_MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME")
+OLLAMA_URL = os.getenv("OLLAMA_URL")
+RETRIEVER_CONFIG = config["retriever_config"]
+
 # Load the retriever
-retriever_obj = SectionsRetriever(
-    os.getenv("OLLAMA_MODEL_NAME"), 
-    os.getenv("OLLAMA_URL"),
-    config["retriever_config"]
-)
+retriever_obj = SectionsRetriever(OLLAMA_MODEL_NAME, OLLAMA_URL, RETRIEVER_CONFIG)
 
 # Test retriever
-experience="""I worked at the company Lambda ste as an AI engineer starting from January 2020 till now.
-In my experience I worked on building smart assistance that iproved productivity in our solution by 60%. 
-And I lead a team of 3 engineers and ditributed the work given between them.
-"""
-json_text = retriever_obj.process_experience(experience)
+EXPERIENCE=""""""
+json_text = retriever_obj.process_experience(EXPERIENCE)
 
 print(json_text.content)
 
