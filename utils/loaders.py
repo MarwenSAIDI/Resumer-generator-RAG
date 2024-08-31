@@ -1,6 +1,7 @@
 """ Build the loaders for the main LLM and the config file """
 
 from langchain_ollama.chat_models import ChatOllama
+from langchain_core.prompts import PromptTemplate
 import yaml
 
 def load_config(config_file:str):
@@ -21,7 +22,7 @@ class RagChain:
     """_summary_
     """
 
-    def __init__(self, model_name:str, url:str, config, retriever=None) -> None:
+    def __init__(self, model_name:str, url:str, config) -> None:
         """_summary_
 
         Args:
@@ -40,12 +41,15 @@ class RagChain:
             stop=self.config['stop_tokens']
         )
 
-        self.retriever = retriever
-    def call_chain(self):
+    def find_experiences(self, job_offer:str):
         """_summary_
         """
-        return 0
-    def format_resumer(self):
+        prompt = PromptTemplate.from_template(self.config["experience_filter_prompt"])
+
+        return self.llm.invoke(prompt.format(job_offer=job_offer))
+    def find_softskills(self, job_offer:str):
         """_summary_
         """
-        return 0
+        prompt = PromptTemplate.from_template(self.config["softskills_filter_prompt"])
+
+        return self.llm.invoke(prompt.format(job_offer=job_offer))

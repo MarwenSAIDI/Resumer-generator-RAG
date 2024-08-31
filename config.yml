@@ -20,8 +20,21 @@ retriever_config:
   
   <|start_header_id|>user<|end_header_id|>Experience: {query}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
 
-  experience_construct_prompt: "<|start_header_id|>system<|end_header_id|>You are a professionnal write. You take a structures JSON format
+  experience_construct_prompt: "<|start_header_id|>system<|end_header_id|>You are a professionnal writer. You take a structures JSON format
   related to the {section_name} section and reconstruct it into the appropriate block format
   for the resume. No preambles and no extra details<|eot_id|>
 
   <|start_header_id|>user<|end_header_id|>JSON to reconstruct: {json_text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+
+generater_config:
+  stop_tokens: ["<|start_header_id|>","<|end_header_id|>","<|eot_id|>"]
+  experience_filter_prompt: "<|start_header_id|>system<|end_header_id|>As a job seeker, you take in a job offer below and you read it thoroughly. You look for
+  information usefull to determine the experiences, the tasks and tools/technologies needed for this position and you write them in a single 
+  small paragraph with no preambles.<|eot_id|>
+  
+  <|start_header_id|>user<|end_header_id|>Job Offer: {job_offer}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+  softskills_filter_prompt: "<|start_header_id|>system<|end_header_id|>As a job seeker, you take in a job offer below and you read it thoroughly. You look for
+  information usefull to determine the softskill required from the candidate for this position and what the company 
+  values the most. You write what you found in a single small paragraph with no preambles.<|eot_id|>
+  
+  <|start_header_id|>user<|end_header_id|>Job Offer: {job_offer}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
