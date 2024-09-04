@@ -53,3 +53,22 @@ class RagChain:
         prompt = PromptTemplate.from_template(self.config["softskills_filter_prompt"])
 
         return self.llm.invoke(prompt.format(job_offer=job_offer))
+    def generate_resume(self, candidate_details, result_softskills, result_experiences,retriever):
+        """_summary_
+
+        Args:
+            result_softskills (_type_): _description_
+            retriever (_type_): _description_
+        """
+        documents = retriever.invoke(result_experiences)
+        context = "\n".join(doc.page_content for doc in documents)
+        prompt = PromptTemplate.from_template(self.config["generator_prompt"])
+        query = prompt.format(
+            fullName=candidate_details['fullName'],
+            phoneNumber=candidate_details['phoneNumber'],
+            email=candidate_details['email'],
+            education=candidate_details['education'],
+            softSkills=result_softskills,
+            experiences_company=candidate_details,
+            experience_context=context)
+        return self.llm.invoke(query)

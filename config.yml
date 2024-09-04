@@ -38,3 +38,17 @@ generater_config:
   values the most. You write what you found in a single small paragraph with no preambles.<|eot_id|>
   
   <|start_header_id|>user<|end_header_id|>Job Offer: {job_offer}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+  generator_prompt: "<|start_header_id|>system<|end_header_id|>As a professional writer in a job search company, you help candidates to write a good resume to 
+  apply for their dream job. They provide you with the softskills and experiences needed for the job whilist you add
+  their relevant expereinces to filter more. Then you finally structure a resumer with their fullname, phone number, email,
+  education, skills, and their professional experiences. The resumer should follow the canadian style. If needed remove unneded
+  information and make it coherent. Use the softskills in the summary.<|eot_id|>
+  
+  <|start_header_id|>user<|end_header_id|>
+  Fullname: {fullName}
+  Phone Number: {phoneNumber}
+  Email: {email}
+  Education:{education}
+  Softskills: {softSkills}
+  Professional experiences needed:{experiences_company}
+  Professional experiences candidate: {experience_context}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
