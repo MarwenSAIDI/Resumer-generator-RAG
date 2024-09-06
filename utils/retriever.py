@@ -72,5 +72,5 @@ class SectionsRetriever:
         splits = text_splitter.split_documents(query_list)
         vectorstore = Chroma.from_documents(documents=splits, embedding=self.embedder)
 
-        return vectorstore.as_retriever(search_type="mmr", search_type={'fetch_k':2})
+        return vectorstore.as_retriever(search_type="similarity", search_kwargs={'k':2})
     

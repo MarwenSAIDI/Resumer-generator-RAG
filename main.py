@@ -20,30 +20,40 @@ CHAIN_CONFIG = config["generater_config"]
 retriever_obj = SectionsRetriever(OLLAMA_MODEL_NAME, OLLAMA_URL, RETRIEVER_CONFIG)
 
 # Test retriever
-EXPERIENCE=""""""
-json_text = retriever_obj.process_experience(EXPERIENCE)
+EXPERIENCE_1=""""""
 
-print(json_text.content)
+EXPERIENCE_2=""""""
 
-print("---------------------")
+EXPERIENCE_3=""""""
 
-doc = retriever_obj.reconstruct_experience("professional experience", json_text)
+print("Process experiences ...")
+json_text_1 = retriever_obj.process_experience(EXPERIENCE_1)
+json_text_2 = retriever_obj.process_experience(EXPERIENCE_2)
+json_text_3 = retriever_obj.process_experience(EXPERIENCE_3)
 
-print(doc.content)
-print("---------------------")
 
+doc_1 = retriever_obj.reconstruct_experience("professional experience", json_text_1.content)
+doc_2 = retriever_obj.reconstruct_experience("professional experience", json_text_2.content)
+doc_3 = retriever_obj.reconstruct_experience("professional experience", json_text_3.content)
 
-print(retriever_obj.create_retriever([doc.content]))
+print("Add to retriever ...")
+retiriever = retriever_obj.create_retriever([doc_1.content, doc_2.content, doc_3.content])
 
 # Test the RagChain loader
 chain_obj = RagChain(OLLAMA_MODEL_NAME, OLLAMA_URL, CHAIN_CONFIG)
 
 JOB_OFFER=""""""
 
+print("Get experiences/softskills from job offer ...")
 experiences = chain_obj.find_experiences(JOB_OFFER)
-print(experiences.content)
-
-print("------------------------")
 
 softskills = chain_obj.find_softskills(JOB_OFFER)
-print(softskills.content)
+
+# Generate resumer
+details = {}
+
+print("Generate resumer ...")
+resumer = chain_obj.generate_resume(details, softskills.content, experiences.content, retiriever)
+
+print("*"*20)
+print(resumer.content)
