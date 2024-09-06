@@ -1,21 +1,59 @@
-from utils.retriever import SectionsRetriever
-import os
+""" In this main file we test the functionalities built. """
 
+import os
+from dotenv import load_dotenv
+from utils.retriever import SectionsRetriever
+from utils.loaders import RagChain
+from utils.loaders import load_config
+
+load_dotenv('.env')
+
+# load the config file
+config = load_config(os.path.join(os.getcwd(),"config.yml"))
+
+OLLAMA_MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME")
+OLLAMA_URL = os.getenv("OLLAMA_URL")
+RETRIEVER_CONFIG = config["retriever_config"]
+CHAIN_CONFIG = config["generater_config"]
 
 # Load the retriever
-retriever_obj = SectionsRetriever(
-    os.getenv("OLLAMA_MODEL_NAME"), 
-    os.getenv("OLLAMA_URL"),
-    os.path.join(os.getcwd(),"config.yml")
-)
+retriever_obj = SectionsRetriever(OLLAMA_MODEL_NAME, OLLAMA_URL, RETRIEVER_CONFIG)
 
 # Test retriever
-experience="""I worked at the company Lambda ste as an AI engineer starting from January 2020 till now.
-In my experience I worked on building smart assistance that iproved productivity in our solution by 60%. 
-And I lead a team of 3 engineers and ditributed the work given between them.
-"""
-json_text = retriever_obj.process_experience(experience)
+EXPERIENCE_1=""""""
 
-doc = retriever_obj.reconstruct_experience("professional experience", json_text)
+EXPERIENCE_2=""""""
 
-print(retriever_obj.create_retriever([doc]))
+EXPERIENCE_3=""""""
+
+print("Process experiences ...")
+json_text_1 = retriever_obj.process_experience(EXPERIENCE_1)
+json_text_2 = retriever_obj.process_experience(EXPERIENCE_2)
+json_text_3 = retriever_obj.process_experience(EXPERIENCE_3)
+
+
+doc_1 = retriever_obj.reconstruct_experience("professional experience", json_text_1.content)
+doc_2 = retriever_obj.reconstruct_experience("professional experience", json_text_2.content)
+doc_3 = retriever_obj.reconstruct_experience("professional experience", json_text_3.content)
+
+print("Add to retriever ...")
+retiriever = retriever_obj.create_retriever([doc_1.content, doc_2.content, doc_3.content])
+
+# Test the RagChain loader
+chain_obj = RagChain(OLLAMA_MODEL_NAME, OLLAMA_URL, CHAIN_CONFIG)
+
+JOB_OFFER=""""""
+
+print("Get experiences/softskills from job offer ...")
+experiences = chain_obj.find_experiences(JOB_OFFER)
+
+softskills = chain_obj.find_softskills(JOB_OFFER)
+
+# Generate resumer
+details = {}
+
+print("Generate resumer ...")
+resumer = chain_obj.generate_resume(details, softskills.content, experiences.content, retiriever)
+
+print("*"*20)
+print(resumer.content)

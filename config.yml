@@ -1,5 +1,5 @@
-llm:
-  stop_tokens: ["<|end|>","<|user|>","<|assistant|>"]
+retriever_config:
+  stop_tokens: ["<|start_header_id|>","<|end_header_id|>","<|eot_id|>"]
   experience_extraction_schema: "{
     'title': The experience title,
     'position': The job position occupied,
@@ -11,18 +11,43 @@ llm:
     'Tools': A list of tools/technologies used in the tasks 
   }"
 
-  experience_extraction_prompt: "<|system|>You are data engineer working in a recruitment department.
-  You take prompt of people experiences in a job and you extract them based on a
-  schema. Make sure to reformulate the tasks when needed by adding action verbs,
-  highlighting the contributions, and keeping metrics if present. Make sure there are no
-  preambles and no hallucination.
-  
-  Schema: {schema}<|end|>
-  
-  <|user|>Experience: {query}<|end|><|assistant|>"
+  experience_extraction_prompt: "You are data engineer working in a recruitment department.
+    You take prompt of people experiences in a job and you extract them based on a
+    schema. Make sure to reformulate the tasks when needed by adding action verbs,
+    highlighting the contributions, and keeping metrics if present. No preambles return the JSON file.
+    
+    Schema: {schema}
+    
+    Experience: {query}"
 
-  experience_construct_prompt: "<|system|>You are a professionnal write. You take a structures JSON format
-  related to the {section_name} section and reconstruct it into the appropriate block format
-  for the resume.<|end|>
+  experience_construct_prompt: "You are a professionnal writer. You take a structures JSON format
+    related to the {section_name} section and reconstruct it into the appropriate block format
+    for the resume. No preambles and no extra details
 
-  <|user|>JSON to reconstruct: {json_text}<|end|><|assistant|>"
+    JSON to reconstruct: {json_text}"
+
+generater_config:
+  stop_tokens: ["<|start_header_id|>","<|end_header_id|>","<|eot_id|>"]
+  experience_filter_prompt: "As a job seeker, you take in a job offer below and you read it thoroughly. You look for
+    information usefull to determine the experiences, the tasks and tools/technologies needed for this position and you write them in a single 
+    small paragraph with no preambles.
+    
+    Job Offer: {job_offer}"
+  softskills_filter_prompt: "As a job seeker, you take in a job offer below and you read it thoroughly. You look for
+    information usefull to determine the softskill required from the candidate for this position and what the company 
+    values the most. You write what you found in a single small paragraph with no preambles.
+  
+    Job Offer: {job_offer}"                             
+  generator_prompt: "As a professional writer in a job search company, you help candidates to write a good resume to 
+    apply for their dream job. They provide you with the softskills and experiences needed for the job whilist you add
+    their relevant expereinces to filter more. Then you finally write a resumer with their fullname, phone number, email,
+    education, skills, and their professional experiences. The resumer should follow the canadian style. If needed remove unneded
+    information and make it coherent. Use the softskills in the summary.
+    
+    Fullname: {fullName}
+    Phone Number: {phoneNumber}
+    Email: {email}
+    Education:{education}
+    Softskills: {softSkills}
+    Professional experiences needed:{experiences_company}
+    Professional experiences candidate: {experience_context}"
