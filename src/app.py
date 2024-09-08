@@ -2,9 +2,9 @@
 
 import os
 from dotenv import load_dotenv
-from utils.retriever import SectionsRetriever
-from utils.loaders import RagChain
-from utils.loaders import load_config
+from src.v1.utils.retriever import SectionsRetriever
+from src.v1.utils.loaders import RagChain
+from src.v1.utils.loaders import load_config
 
 load_dotenv('.env')
 
