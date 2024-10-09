@@ -1,20 +1,19 @@
 retriever_config:
   stop_tokens: ["<|start_header_id|>","<|end_header_id|>","<|eot_id|>"]
   experience_extraction_schema: "{
-    'title': The experience title,
-    'position': The job position occupied,
-    'company': The campany name,
-    'start_date': The start date of the experience,
-    'end_date': The end date of the experience ( if does not exist then write 'Present'),
-    'Tasks': A list tasks provided in the query,
-    'Skills': A list of skills present or can be derived from the query,
-    'Tools': A list of tools/technologies used in the tasks 
+    'roleName': The job role occupied,
+    'companyName': The campany name,
+    'location': The location of the company,
+    'startDate': The start date of the experience,
+    'endDate': The end date of the experience ( if does not exist then write 'Present'),
+    'accomplishments': A list accomplishements provided in the query ( strings ),
+    'skills': A list of skills present or can be derived from the query
   }"
 
   experience_extraction_prompt: "You are data engineer working in a recruitment department.
     You take prompt of people experiences in a job and you extract them based on a
     schema. Make sure to reformulate the tasks when needed by adding action verbs,
-    highlighting the contributions, and keeping metrics if present. No preambles return the JSON file.
+    highlighting the contributions, and keeping metrics if present. No preambles and return a JSON file.
     
     Schema: {schema}
     

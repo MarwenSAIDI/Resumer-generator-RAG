@@ -4,3 +4,5 @@ langchain_ollama==0.1.1
 python-dotenv==1.0.1
 PyYAML==6.0.2
 python_dotenv
+fastapi[standars]
+pydantic
