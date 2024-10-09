@@ -15,7 +15,7 @@ OLLAMA_MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME")
 OLLAMA_URL = os.getenv("OLLAMA_URL")
 CHAIN_CONFIG = config["generater_config"]
 
-router = APIRouter()
+router = APIRouter(prefix="generator")
 
 @router.get("/status")
 def status():

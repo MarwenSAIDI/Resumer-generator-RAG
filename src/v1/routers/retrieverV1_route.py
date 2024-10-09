@@ -15,7 +15,7 @@ OLLAMA_MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME")
 OLLAMA_URL = os.getenv("OLLAMA_URL")
 RETRIEVER_CONFIG = config["retriever_config"]
 
-router = APIRouter()
+router = APIRouter(prefix="retriever")
 
 @router.get("/status")
 def status():

@@ -13,8 +13,8 @@ def create_app():
     app_ = FastAPI()
 
     #Include the routes
-    app_.include_router(generatorV1_route.router, prefix="/v1/generator")
-    app_.include_router(retrieverV1_route.router, prefix="/v1/retriever")
+    app_.include_router(generatorV1_route.router, prefix="api/v1")
+    app_.include_router(retrieverV1_route.router, prefix="api/v1")
 
     return app_
 
