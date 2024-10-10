@@ -1,5 +1,6 @@
 """ The retriver and the vector store where all the RAG chunks are stored """
 
+from typing import List
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_ollama.chat_models import ChatOllama
@@ -10,12 +11,10 @@ from langchain.docstore.document import Document
 class SectionsRetriever:
     """_summary_
     """
-    def __init__(self,model_name:str, url:str, config_retriever) -> None:
+    def __init__(self,model_name:str, url:str, stop_tokens:List[str]) -> None:
         """
-        
+        _summary_
         """
-        # Load configs
-        self.config = config_retriever
 
         # Load the embedding model
         self.embedder = OllamaEmbeddings(
@@ -27,9 +26,9 @@ class SectionsRetriever:
         self.llm = ChatOllama(
             model=model_name,
             base_url=url,
-            stop=self.config['stop_tokens']
+            stop=stop_tokens
         )
-    def process_experience(self, corpus:str) -> str:
+    def process_experience(self, corpus:str, schema:str, prompt:str) -> str:
         """_summary_
 
         Args:
@@ -39,12 +38,12 @@ class SectionsRetriever:
             str: _description_
         """
         # Create the prompt
-        prompt = PromptTemplate.from_template(self.config["experience_extraction_prompt"])
-        schema = self.config["experience_extraction_schema"]
+        prompt = PromptTemplate.from_template(prompt)
+        # schema = self.config["experience_extraction_schema"]
         query = prompt.format(schema=schema, query=corpus)
 
         return self.llm.invoke(query)
-    def reconstruct_experience(self, section_name:str, json_structure:str) -> str:
+    def reconstruct_experience(self, section_name:str, json_structure:str, prompt:str) -> str:
         """_summary_
 
         Args:
@@ -54,7 +53,7 @@ class SectionsRetriever:
         Returns:
             str: _description_
         """
-        prompt = PromptTemplate.from_template(self.config["experience_construct_prompt"])
+        prompt = PromptTemplate.from_template(prompt)
 
         return self.llm.invoke(prompt.format(json_text=json_structure, section_name=section_name))
     def create_retriever(self, query_list):
