@@ -69,3 +69,8 @@ def structure_experience(experience:str) -> Experience:
         experienceContent=content
     )
     return exp.model_dump()
+
+@router.post("/rewriteExperience", response_model=dict)
+def rewrite_experience(experience:Experience) -> dict:
+    print(experience)
+    return {'rewrite': ""}
