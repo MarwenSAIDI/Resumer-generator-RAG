@@ -14,3 +14,6 @@ class Experience(BaseModel):
     location: str = Field(description="The area and location of the company")
     datePeriod: str = Field(description="The period of work")
     experienceContent: ExperienceContent
+
+class RetrievedExperience(BaseModel):
+    contents: List[str] = Field(description="List of relevant experiences")

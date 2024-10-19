@@ -45,10 +45,6 @@ generater_config:
     education, skills, and their professional experiences. The resumer should follow the canadian style. If needed remove unneded
     information and make it coherent. Use the softskills in the summary.
     
-    Fullname: {fullName}
-    Phone Number: {phoneNumber}
-    Email: {email}
-    Education:{education}
-    Softskills: {softSkills}
-    Professional experiences needed:{experiences_company}
-    Professional experiences candidate: {experience_context}"
+    Profile:{profile}
+    Required experiences ans softskills:{experiences_company}
+    Candidate experiences: {experience_context}"

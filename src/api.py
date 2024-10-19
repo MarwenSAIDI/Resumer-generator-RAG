@@ -43,7 +43,7 @@ def create_app():
     app_ = FastAPI(title=TITLE, version=VERSION)
 
     # Include the routes
-    app_.include_router(generator_route.router, prefix="/api/v1")
+    app_.include_router(generator_route.router, prefix="/api/v1", )
     app_.include_router(retriever_route.router, prefix="/api/v1")
 
     # Add exceptions

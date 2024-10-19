@@ -2,8 +2,8 @@
 The retriever route file
 """
 import os
-from fastapi import APIRouter, status
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, status, UploadFile
+from fastapi.responses import FileResponse, JSONResponse
 from dotenv import load_dotenv
 from uuid import uuid1
 import pickle
@@ -13,6 +13,7 @@ from starlette.background import BackgroundTasks
 from src.v1.utils.retriever import SectionsRetriever
 from src.v1.utils.loaders import load_config
 from src.v1.utils.logger import logger
+from src.v1.schemas.experience_schema import RetrievedExperience
 from src.exceptions import *
 from src.config import config
 
@@ -27,9 +28,6 @@ OLLAMA_ENDPOINT = os.getenv("OLLAMA_ENDPOINT")
 RETRIEVER_CONFIG = llm_config["retriever_config"]
 
 retriever_obj = SectionsRetriever(EMBEDDING_MODEL_NAME, OLLAMA_ENDPOINT)
-experience_content_schema = RETRIEVER_CONFIG['experience_content_schema']
-experience_schema = RETRIEVER_CONFIG['experience_schema']
-extraction_prompt = RETRIEVER_CONFIG['experience_extraction_prompt']
 
 if not os.path.exists(os.path.join(os.getcwd(), 'data')):
     os.mkdir(os.path.join(os.getcwd(), 'data'))
@@ -58,7 +56,7 @@ def del_files(job='delete files'):
         logger.warning(f"retriever_route ({job}) - {e.args[0]}")
 
 
-router = APIRouter(prefix="/retriever")
+router = APIRouter(prefix="/retriever", tags=["Retriever"])
 
 @router.get("")
 def state():
@@ -69,7 +67,7 @@ def state():
 
 
 @router.post("/embedExperience")
-async def structure_experience(experience:str, background_tasks: BackgroundTasks):
+async def embed_experience(experience:str, background_tasks: BackgroundTasks):
     """This endpoint creates an embedding of the experience provided and returns a
     pickle file with embeddings.
 
@@ -95,3 +93,30 @@ async def structure_experience(experience:str, background_tasks: BackgroundTasks
     
     except asyncio.exceptions.TimeoutError:
         raise UnprocessedRequestError(name="Resumer retiever route", message="The embedding model Timed out")
+
+@router.post("/retrieveExperiences")
+async def retrieve_experiences(
+    jobOfferExperiences:str,
+    maxExperiences:int,
+    filesContents: list[UploadFile]
+) -> RetrievedExperience:
+    
+    # load the experiences into the retriever
+    files = []
+    for f in filesContents:
+            f = pickle.load(f.file)
+            files.append(f)
+    
+    retriever_obj.set_retriever(files, maxExperiences)
+
+    # get the relevant experiences
+    try:
+        exps = await asyncio.wait_for(retriever_obj.get_relevant_experiences(jobOfferExperiences), timeout=TIMEOUT)
+        logger.info("retriever_route - Sucessfully retrieved the contexts")
+
+        return RetrievedExperience(
+            contents=exps,
+        )
+    except asyncio.exceptions.TimeoutError:
+        raise UnprocessedRequestError(name="Resumer retiever route", message="The retriever Timed out")
+    
