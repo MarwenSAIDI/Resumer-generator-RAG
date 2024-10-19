@@ -100,7 +100,7 @@ async def retrieve_experiences(
     jobOffer:str,
     maxExperiences:int,
     filesContents: list[UploadFile]
-) -> JSONResponse:
+) -> RetrievedExperience:
     
     # load the experiences into the retriever
     files = []
@@ -115,8 +115,8 @@ async def retrieve_experiences(
         exps = await asyncio.wait_for(retriever_obj.get_relevant_experiences(jobOffer), timeout=TIMEOUT)
         logger.info("retriever_route - Sucessfully retrieved the contexts")
 
-        return JSONResponse(
-            content={'contents':exps}
+        return RetrievedExperience(
+            contents=exps
         )
     except asyncio.exceptions.TimeoutError:
         raise UnprocessedRequestError(name="Resumer retiever route", message="The retriever Timed out")
