@@ -93,13 +93,14 @@ async def embed_experience(experience:str, background_tasks: BackgroundTasks):
     
     except asyncio.exceptions.TimeoutError:
         raise UnprocessedRequestError(name="Resumer retiever route", message="The embedding model Timed out")
+    
 
 @router.post("/retrieveExperiences")
 async def retrieve_experiences(
-    jobOfferExperiences:str,
+    jobOffer:str,
     maxExperiences:int,
     filesContents: list[UploadFile]
-) -> RetrievedExperience:
+) -> JSONResponse:
     
     # load the experiences into the retriever
     files = []
@@ -111,11 +112,11 @@ async def retrieve_experiences(
 
     # get the relevant experiences
     try:
-        exps = await asyncio.wait_for(retriever_obj.get_relevant_experiences(jobOfferExperiences), timeout=TIMEOUT)
+        exps = await asyncio.wait_for(retriever_obj.get_relevant_experiences(jobOffer), timeout=TIMEOUT)
         logger.info("retriever_route - Sucessfully retrieved the contexts")
 
-        return RetrievedExperience(
-            contents=exps,
+        return JSONResponse(
+            content={'contents':exps}
         )
     except asyncio.exceptions.TimeoutError:
         raise UnprocessedRequestError(name="Resumer retiever route", message="The retriever Timed out")
