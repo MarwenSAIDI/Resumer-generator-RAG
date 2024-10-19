@@ -2,25 +2,60 @@
 The retriever route file
 """
 import os
-import json
 from fastapi import APIRouter, status
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv
+from uuid import uuid1
+import pickle
+import time
+import asyncio
+from starlette.background import BackgroundTasks
 from src.v1.utils.retriever import SectionsRetriever
 from src.v1.utils.loaders import load_config
-from src.v1.schemas.experience_schema import Experience, ExperienceContent
+from src.v1.utils.logger import logger
+from src.exceptions import *
+from src.config import config
 
 load_dotenv('.env')
 # load the config file
-config = load_config(os.path.join(os.getcwd(),"config.yml"))
+llm_config = load_config(os.path.join(os.getcwd(),"config.yml"))
 
-OLLAMA_MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME")
-OLLAMA_URL = os.getenv("OLLAMA_URL")
-RETRIEVER_CONFIG = config["retriever_config"]
+TIMEOUT = int(config['THIRD-PARTY']['timeout'])
 
-retriever_obj = SectionsRetriever(OLLAMA_MODEL_NAME, OLLAMA_URL, RETRIEVER_CONFIG['stop_tokens'])
+EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME")
+OLLAMA_ENDPOINT = os.getenv("OLLAMA_ENDPOINT")
+RETRIEVER_CONFIG = llm_config["retriever_config"]
+
+retriever_obj = SectionsRetriever(EMBEDDING_MODEL_NAME, OLLAMA_ENDPOINT)
 experience_content_schema = RETRIEVER_CONFIG['experience_content_schema']
 experience_schema = RETRIEVER_CONFIG['experience_schema']
 extraction_prompt = RETRIEVER_CONFIG['experience_extraction_prompt']
+
+if not os.path.exists(os.path.join(os.getcwd(), 'data')):
+    os.mkdir(os.path.join(os.getcwd(), 'data'))
+
+logger.info("retriever_route - Setting up the environment variables")
+
+def del_files(job='delete files'):
+    """A background task that deletes unnecessary files.
+
+    Args:
+        job (str, optional): The job title. Defaults to 'delete files'.
+
+    Raises:
+        ValueError: If a problem occures
+    """
+    
+    pkl_files = os.listdir("data")
+    try:
+        if pkl_files != []:
+            for p in pkl_files:
+                os.unlink(os.path.join(os.getcwd(), "data", p))
+        else:
+            raise ValueError("There are no files to delete")
+        logger.info(f"retriever_route ({job}) - All files have been deleted")
+    except Exception as e:
+        logger.warning(f"retriever_route ({job}) - {e.args[0]}")
 
 
 router = APIRouter(prefix="/retriever")
@@ -31,46 +66,32 @@ def state():
     """
     return {"status": status.HTTP_200_OK}
 
-@router.post("/structureExperience", response_model=Experience)
-def structure_experience(experience:str) -> Experience:
-    """This endpoint structures the text of the experience provided by
-    into a JSON format.
+
+
+@router.post("/embedExperience")
+async def structure_experience(experience:str, background_tasks: BackgroundTasks):
+    """This endpoint creates an embedding of the experience provided and returns a
+    pickle file with embeddings.
 
     Args:
         experience (str): The unstructured experience text
 
     Returns:
-        Experience: A structured experience format
+        Pickle file: a pickeled file of the embedding
     """
-    obj_content = retriever_obj.process_experience(
-        experience,
-        experience_content_schema,
-        extraction_prompt
-    )
-    obj_exp = retriever_obj.process_experience(
-        experience,
-        experience_schema,
-        extraction_prompt
-    )
+    logger.info("retriever_route - Passing the experience to the embedding model")
 
-    data_exp_content = json.loads(obj_content.content)
-    data_exp = json.loads(obj_exp.content)
 
-    content = ExperienceContent(
-        skills=data_exp_content['skills'],
-        accomplishments=data_exp_content['accomplishments']
-    )
-    exp = Experience(
-        experienceId=0,
-        roleName=data_exp['roleName'],
-        companyName=data_exp['companyName'],
-        datePeriod=data_exp['datePeriod'],
-        location=data_exp['location'],
-        experienceContent=content
-    )
-    return exp.model_dump()
+    start = time.time()
+    try:
+        obj_experience = await asyncio.wait_for(retriever_obj.create_embedding(experience), timeout=TIMEOUT)
+        file_name = f"experience_{uuid1()}.pkl"
+        with open(f"data/{file_name}", "wb") as f:
+            pickle.dump(obj_experience, f)
 
-@router.post("/rewriteExperience", response_model=dict)
-def rewrite_experience(experience:Experience) -> dict:
-    print(experience)
-    return {'rewrite': ""}
+        logger.info(f"retriever_route - Compressed the zip object after {time.time() - start} seconds.")
+        background_tasks.add_task(del_files)
+        return FileResponse(f"data/{file_name}", media_type='application/octet-stream', filename=file_name)
+    
+    except asyncio.exceptions.TimeoutError:
+        raise UnprocessedRequestError(name="Resumer retiever route", message="The embedding model Timed out")

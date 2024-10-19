@@ -2,3 +2,6 @@ env
 .env
 __pycache__
 test
+logs
+data
+configuration.py
