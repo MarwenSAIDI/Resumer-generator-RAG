@@ -2,8 +2,8 @@
 The retriever route file
 """
 import os
-from fastapi import APIRouter, status
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, status, UploadFile
+from fastapi.responses import FileResponse, JSONResponse
 from dotenv import load_dotenv
 from uuid import uuid1
 import pickle
@@ -69,7 +69,7 @@ def state():
 
 
 @router.post("/embedExperience")
-async def structure_experience(experience:str, background_tasks: BackgroundTasks):
+async def embed_experience(experience:str, background_tasks: BackgroundTasks):
     """This endpoint creates an embedding of the experience provided and returns a
     pickle file with embeddings.
 
@@ -95,3 +95,31 @@ async def structure_experience(experience:str, background_tasks: BackgroundTasks
     
     except asyncio.exceptions.TimeoutError:
         raise UnprocessedRequestError(name="Resumer retiever route", message="The embedding model Timed out")
+    
+
+@router.post("/retrieveExperiences")
+async def retrieve_experiences(
+    jobOffer:str,
+    maxExperiences:int,
+    filesContents: list[UploadFile]
+) -> JSONResponse:
+    
+    # load the experiences into the retriever
+    files = []
+    for f in filesContents:
+            f = pickle.load(f.file)
+            files.append(f)
+    
+    retriever_obj.set_retriever(files, maxExperiences)
+
+    # get the relevant experiences
+    try:
+        exps = await asyncio.wait_for(retriever_obj.get_relevant_experiences(jobOffer), timeout=TIMEOUT)
+        logger.info("retriever_route - Sucessfully retrieved the contexts")
+
+        return JSONResponse(
+            content={'contents':exps}
+        )
+    except asyncio.exceptions.TimeoutError:
+        raise UnprocessedRequestError(name="Resumer retiever route", message="The retriever Timed out")
+    

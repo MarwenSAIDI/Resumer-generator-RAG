@@ -2,11 +2,7 @@
 
 from typing import List
 from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.vectorstores import Chroma, FAISS
-from langchain_ollama.chat_models import ChatOllama
-from langchain_core.prompts import PromptTemplate
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain.docstore.document import Document
+from langchain_community.vectorstores import FAISS
 from src.v1.utils.logger import logger
 
 class SectionsRetriever:
@@ -16,12 +12,12 @@ class SectionsRetriever:
         """
         _summary_
         """
-
         # Load the embedding model
         self.embedder = OllamaEmbeddings(
             model=model_name,
             base_url=url,
         )
+        self.retriever = None
         logger.info("retriever - Initialize the embedding model")
 
     async def create_embedding(self, text):
@@ -38,20 +34,34 @@ class SectionsRetriever:
         logger.info("retriever - Sucessfully generated the embedding")
         return zip([text], embedding)
     
-    # def create_retriever(self, query_list):
-    #     """_summary_
+    def set_retriever(self, text_embedding_pairs, k) -> None:
+        """_summary_
 
-    #     Args:
-    #         query_list (_type_): _description_
+        Args:
+            text_embedding_pairs (_type_): _description_
+        """
 
-    #     Returns:
-    #         _type_: _description_
-    #     """
-    #     query_list = [Document(page_content=chunk) for chunk in query_list]
+        logger.debug("retriever - Initialize the retriever object")
+        vectorstore = None
+        for i, pair in enumerate(text_embedding_pairs):
+            if i == 0:
+                vectorstore = FAISS.from_embeddings(pair, self.embedder)
+            else:
+                vectorstore.merge_from(FAISS.from_embeddings(pair, self.embedder))
+            logger.info("retriever - Added retriever object")
 
-    #     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    #     splits = text_splitter.split_documents(query_list)
-    #     vectorstore = Chroma.from_documents(documents=splits, embedding=self.embedder)
+        
 
-    #     return vectorstore.as_retriever(search_type="similarity", search_kwargs={'k':2})
+        self.retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={'k':k})
+        logger.info("retriever - Sucessfully created the retriever object")
+
+    async def get_relevant_experiences(self, job_offer: str) -> None:
+        """_summary_
+
+        Args:
+            job_offer (str): _description_
+        """
+        exps = await self.retriever.ainvoke(job_offer)
+
+        return [e.page_content for e in exps]
     
