@@ -1,6 +1,6 @@
 """This is the schema for the user profile"""
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class SocialMeadia(BaseModel):
     """This is the schema for the user social media"""

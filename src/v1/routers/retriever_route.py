@@ -3,8 +3,7 @@ The retriever route file
 """
 import os
 from fastapi import APIRouter, status, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
-from dotenv import load_dotenv
+from fastapi.responses import FileResponse
 from uuid import uuid1
 import pickle
 import time
@@ -17,7 +16,6 @@ from src.v1.schemas.experience_schema import RetrievedExperience
 from src.exceptions import *
 from src.config import config
 
-load_dotenv('.env')
 # load the config file
 llm_config = load_config(os.path.join(os.getcwd(),"config.yml"))
 
