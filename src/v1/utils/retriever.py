@@ -1,6 +1,5 @@
 """ The retriver and the vector store where all the RAG chunks are stored """
 
-from typing import List
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from src.v1.utils.logger import logger
@@ -32,6 +31,7 @@ class SectionsRetriever:
         logger.debug("retriever - Processing the text")
         embedding = await self.embedder.aembed_documents([text])
         logger.info("retriever - Sucessfully generated the embedding")
+        
         return zip([text], embedding)
     
     def set_retriever(self, text_embedding_pairs, k) -> None:
@@ -49,9 +49,7 @@ class SectionsRetriever:
             else:
                 vectorstore.merge_from(FAISS.from_embeddings(pair, self.embedder))
             logger.info("retriever - Added retriever object")
-
         
-
         self.retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={'k':k})
         logger.info("retriever - Sucessfully created the retriever object")
 
