@@ -10,14 +10,9 @@ class ResumerGeneratorApiError(Exception):
 class ServiceError(ResumerGeneratorApiError):
     """Failures in external services or APIs like databases of third-party service"""
 
-    pass
-
 class EntityDoesNotExistError(ResumerGeneratorApiError):
     """When the database of any third-party service does not return anything"""
 
-    pass
-
 class UnprocessedRequestError(ResumerGeneratorApiError):
     """When the third-party service request returns an unprecedented result"""
-
-    pass
+    

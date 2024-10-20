@@ -2,13 +2,16 @@
 This is the main api fie where all the routes are
 provided
 """
+from typing import Callable
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
-from typing import Callable
 from src.v1.routers import retriever_route
 from src.v1.routers import generator_route
 from src.v1.utils.logger import logger
-from src.exceptions import *
+from src.exceptions import ResumerGeneratorApiError
+from src.exceptions import ServiceError
+from src.exceptions import EntityDoesNotExistError
+from src.exceptions import UnprocessedRequestError
 from src.config import config
 
 TITLE=config['DEFAULT']['name']
@@ -17,15 +20,23 @@ VERSION=config['DEFAULT']['version']
 def create_exception_handler(
         status_code: int, initial_detail: str
 ) -> Callable[[Request, ResumerGeneratorApiError], JSONResponse]:
+    """
+
+    Args:
+        status_code (int): _description_
+        initial_detail (str): _description_
+
+    Returns:
+        Callable[[Request, ResumerGeneratorApiError], JSONResponse]: _description_
+    """
     detail = {"message": initial_detail}
 
     async def exception_handler(
-        _: Request, 
+        _: Request,
         exc: ResumerGeneratorApiError
     ) -> JSONResponse:
         if exc.message:
             detail['message'] = exc.message
-        
         if exc.name:
             detail['message'] = f"{detail['message']} [{exc.name}]"
 
@@ -33,7 +44,6 @@ def create_exception_handler(
         return JSONResponse(
             status_code=status_code, content={'detail': detail['message']}
         )
-    
     return exception_handler
 
 def create_app():

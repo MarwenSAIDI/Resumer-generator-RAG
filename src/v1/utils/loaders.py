@@ -5,6 +5,7 @@ from typing import List
 from langchain_ollama.chat_models import ChatOllama
 from langchain_core.prompts import PromptTemplate
 from src.v1.schemas.profile_schema import Profile
+from src.v1.schemas.education_schema import Education
 from src.v1.schemas.experience_schema import RetrievedExperience
 from src.v1.schemas.resumer_schema import JobOfferDetails
 from src.v1.utils.logger import logger
@@ -65,6 +66,7 @@ class RagChain:
     async def generate_resume(
             self,
             candidate_profile: Profile,
+            education: Education,
             job_offer_details: JobOfferDetails,
             candidate_experiences: RetrievedExperience,
             generator_prompt: str,
@@ -79,6 +81,7 @@ class RagChain:
         prompt = PromptTemplate.from_template(generator_prompt)
         query = prompt.format(
             profile=candidate_profile.model_dump(),
+            education=education.model_dump(),
             experiences_company=job_offer_details.model_dump(),
             experience_context=context)
         

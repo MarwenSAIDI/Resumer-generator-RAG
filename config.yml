@@ -1,5 +1,4 @@
 retriever_config:
-  stop_tokens: ["<|start_header_id|>","<|end_header_id|>","<|eot_id|>"]
   experience_schema: "{
     'roleName': The job role occupied,
     'companyName': The campany name,
@@ -28,7 +27,7 @@ retriever_config:
     JSON to reconstruct: {json_text}"
 
 generater_config:
-  stop_tokens: ["<|start_header_id|>","<|end_header_id|>","<|eot_id|>"]
+  stop_tokens: ["<|end|>","<|user|>","<|assistant|>"]
   experience_filter_prompt: "As a job seeker, you take in a job offer below and you read it thoroughly. You look for
     information usefull to determine the experiences, the tasks and tools/technologies needed for this position and you write them in a single 
     small paragraph with no preambles.
@@ -39,12 +38,13 @@ generater_config:
     values the most. You write what you found in a single small paragraph with no preambles.
   
     Job Offer: {job_offer}"                             
-  generator_prompt: "As a professional writer in a job search company, you help candidates to write a good resume to 
-    apply for their dream job. They provide you with the softskills and experiences needed for the job whilist you add
-    their relevant expereinces to filter more. Then you finally write a resumer with their fullname, phone number, email,
-    education, skills, and their professional experiences. The resumer should follow the canadian style. If needed remove unneded
-    information and make it coherent. Use the softskills in the summary.
+  generator_prompt: "As a professional resume writer for a job search company, your role is to craft well-formatted 
+    and coherent resumes tailored to the Canadian job market. Use the candidate’s provided soft skills and required experiences to write a clear, 
+    professional summary. Filter and consolidate relevant experiences from the candidate’s background, removing any irrelevant or duplicate information. 
+    Ensure the resume is formatted to include sections for full name, contact information (phone number, email), education, key skills, and professional experiences.
+    The goal is to deliver a concise, easy-to-read resume that emphasizes the candidate's strengths while adhering to Canadian formatting standards.
     
     Profile:{profile}
-    Required experiences ans softskills:{experiences_company}
-    Candidate experiences: {experience_context}"
+    Education:{education}
+    Required experiences and Soft Skills:{experiences_company}
+    Candidate Experiences (to filter and format): {experience_context}"
