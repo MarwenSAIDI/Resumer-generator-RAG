@@ -13,7 +13,7 @@ from src.v1.utils.retriever import SectionsRetriever
 from src.v1.utils.loaders import load_config
 from src.v1.utils.logger import logger
 from src.v1.schemas.experience_schema import RetrievedExperience
-from src.exceptions import *
+from src.exceptions import UnprocessedRequestError
 from src.config import config
 
 # load the config file
@@ -95,8 +95,8 @@ async def embed_experience(experience:str, background_tasks: BackgroundTasks):
 
 @router.post("/retrieveExperiences")
 async def retrieve_experiences(
-    jobOffer:str,
-    maxExperiences:int,
+    job_offer:str,
+    max_experiences:int,
     filesContents: list[UploadFile]
 ) -> RetrievedExperience:
     
@@ -106,11 +106,11 @@ async def retrieve_experiences(
             f = pickle.load(f.file)
             files.append(f)
     
-    retriever_obj.set_retriever(files, maxExperiences)
+    retriever_obj.set_retriever(files, max_experiences)
 
     # get the relevant experiences
     try:
-        exps = await asyncio.wait_for(retriever_obj.get_relevant_experiences(jobOffer), timeout=TIMEOUT)
+        exps = await asyncio.wait_for(retriever_obj.get_relevant_experiences(job_offer), timeout=TIMEOUT)
         logger.info("retriever_route - Sucessfully retrieved the contexts")
 
         return RetrievedExperience(

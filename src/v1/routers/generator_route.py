@@ -12,7 +12,7 @@ from src.v1.schemas.education_schema import Education
 from src.v1.schemas.experience_schema import RetrievedExperience
 from src.v1.schemas.resumer_schema import JobOfferDetails, Resumer
 from src.v1.utils.logger import logger
-from src.exceptions import *
+from src.exceptions import UnprocessedRequestError
 from src.config import config
 
 # load the config file
@@ -47,7 +47,7 @@ def state():
 
 @router.post("/jobOfferExperiences")
 async def job_offer_experiences(
-    jobOffer:str,
+    job_offer:str,
 ) -> JobOfferDetails:
     """
 
@@ -68,7 +68,7 @@ async def job_offer_experiences(
         # get the experiences needed in the job offer
         exps = await asyncio.wait_for(
             generator_obj.find_experiences(
-                jobOffer,
+                job_offer,
                 experience_filter_prompt
             ),
             timeout=TIMEOUT
@@ -77,7 +77,7 @@ async def job_offer_experiences(
         # get the softskills needed in the job offer
         ss = await asyncio.wait_for(
             generator_obj.find_softskills(
-                jobOffer,
+                job_offer,
                 softskills_filter_prompt
             ),
             timeout=TIMEOUT
@@ -101,7 +101,7 @@ async def generate_resumer(
     profile: Profile,
     education: Education,
     retrievedExperiences: RetrievedExperience,
-    jobOfferDetails: JobOfferDetails
+    job_offer_details: JobOfferDetails
 ) -> Resumer:
     """
 
@@ -124,7 +124,7 @@ async def generate_resumer(
         result = await asyncio.wait_for(generator_obj.generate_resume(
             profile,
             education,
-            jobOfferDetails,
+            job_offer_details,
             retrievedExperiences,
             generator_prompt
         ), timeout=TIMEOUT)
