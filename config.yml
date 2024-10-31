@@ -1,20 +1,20 @@
 retriever_config:
-  stop_tokens: ["<|start_header_id|>","<|end_header_id|>","<|eot_id|>"]
-  experience_extraction_schema: "{
-    'title': The experience title,
-    'position': The job position occupied,
-    'company': The campany name,
-    'start_date': The start date of the experience,
-    'end_date': The end date of the experience ( if does not exist then write 'Present'),
-    'Tasks': A list tasks provided in the query,
-    'Skills': A list of skills present or can be derived from the query,
-    'Tools': A list of tools/technologies used in the tasks 
+  experience_schema: "{
+    'roleName': The job role occupied,
+    'companyName': The campany name,
+    'location': The location of the company,
+    'datePeriod': The period of the experience divided by a '-' ( if the end date does not exist then write 'Present') it is required,
+  }"
+
+  experience_content_schema: "{
+    'accomplishments': A list accomplishements provided in the query ( strings ),
+    'skills': A list of skills present or can be derived from the query
   }"
 
   experience_extraction_prompt: "You are data engineer working in a recruitment department.
-    You take prompt of people experiences in a job and you extract them based on a
-    schema. Make sure to reformulate the tasks when needed by adding action verbs,
-    highlighting the contributions, and keeping metrics if present. No preambles return the JSON file.
+    You take a prompt of professional experiences in a job and you extract, based on a
+    schema, the required information. Make sure to reformulate the accomplishements, when needed and if present in the schema, by adding action verbs,
+    highlighting the contributions, and keeping metrics if present. No preambles and return a correct JSON format with no nulls.
     
     Schema: {schema}
     
@@ -27,7 +27,7 @@ retriever_config:
     JSON to reconstruct: {json_text}"
 
 generater_config:
-  stop_tokens: ["<|start_header_id|>","<|end_header_id|>","<|eot_id|>"]
+  stop_tokens: ["<|end|>","<|user|>","<|assistant|>"]
   experience_filter_prompt: "As a job seeker, you take in a job offer below and you read it thoroughly. You look for
     information usefull to determine the experiences, the tasks and tools/technologies needed for this position and you write them in a single 
     small paragraph with no preambles.
@@ -38,16 +38,13 @@ generater_config:
     values the most. You write what you found in a single small paragraph with no preambles.
   
     Job Offer: {job_offer}"                             
-  generator_prompt: "As a professional writer in a job search company, you help candidates to write a good resume to 
-    apply for their dream job. They provide you with the softskills and experiences needed for the job whilist you add
-    their relevant expereinces to filter more. Then you finally write a resumer with their fullname, phone number, email,
-    education, skills, and their professional experiences. The resumer should follow the canadian style. If needed remove unneded
-    information and make it coherent. Use the softskills in the summary.
+  generator_prompt: "As a professional resume writer for a job search company, your role is to craft well-formatted 
+    and coherent resumes tailored to the Canadian job market. Use the candidate’s provided soft skills and required experiences to write a clear, 
+    professional summary. Filter and consolidate relevant experiences from the candidate’s background, removing any irrelevant or duplicate information. 
+    Ensure the resume is formatted to include sections for full name, contact information (phone number, email), education, key skills, and professional experiences.
+    The goal is to deliver a concise, easy-to-read resume that emphasizes the candidate's strengths while adhering to Canadian formatting standards.
     
-    Fullname: {fullName}
-    Phone Number: {phoneNumber}
-    Email: {email}
+    Profile:{profile}
     Education:{education}
-    Softskills: {softSkills}
-    Professional experiences needed:{experiences_company}
-    Professional experiences candidate: {experience_context}"
+    Required experiences and Soft Skills:{experiences_company}
+    Candidate Experiences (to filter and format): {experience_context}"
