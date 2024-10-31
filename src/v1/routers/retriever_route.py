@@ -2,6 +2,7 @@
 The retriever route file
 """
 import os
+from dotenv import load_dotenv
 from fastapi import APIRouter, status, UploadFile
 from fastapi.responses import FileResponse
 from uuid import uuid1
@@ -16,6 +17,7 @@ from src.v1.schemas.experience_schema import RetrievedExperience
 from src.exceptions import UnprocessedRequestError
 from src.config import config
 
+load_dotenv()
 # load the config file
 llm_config = load_config(os.path.join(os.getcwd(),"config.yml"))
 

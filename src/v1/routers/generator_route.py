@@ -5,6 +5,7 @@ import os
 from fastapi import APIRouter, status
 import time
 import asyncio
+from dotenv import load_dotenv
 from src.v1.utils.loaders import load_config
 from src.v1.utils.loaders import RagChain
 from src.v1.schemas.profile_schema import Profile
@@ -15,6 +16,7 @@ from src.v1.utils.logger import logger
 from src.exceptions import UnprocessedRequestError
 from src.config import config
 
+load_dotenv()
 
 # load the config file
 llm_config = load_config(os.path.join(os.getcwd(),"config.yml"))
