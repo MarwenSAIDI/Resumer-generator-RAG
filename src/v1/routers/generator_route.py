@@ -15,6 +15,7 @@ from src.v1.utils.logger import logger
 from src.exceptions import UnprocessedRequestError
 from src.config import config
 
+
 # load the config file
 llm_config = load_config(os.path.join(os.getcwd(),"config.yml"))
 
