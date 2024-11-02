@@ -97,7 +97,7 @@ async def embed_experience(experience:str, background_tasks: BackgroundTasks):
 
 @router.post("/retrieveExperiences")
 async def retrieve_experiences(
-    job_offer:str,
+    job_offer_experiences:str,
     max_experiences:int,
     filesContents: list[UploadFile]
 ) -> RetrievedExperience:
@@ -112,7 +112,7 @@ async def retrieve_experiences(
 
     # get the relevant experiences
     try:
-        exps = await asyncio.wait_for(retriever_obj.get_relevant_experiences(job_offer), timeout=TIMEOUT)
+        exps = await asyncio.wait_for(retriever_obj.get_relevant_experiences(job_offer_experiences), timeout=TIMEOUT)
         logger.info("retriever_route - Sucessfully retrieved the contexts")
 
         return RetrievedExperience(
