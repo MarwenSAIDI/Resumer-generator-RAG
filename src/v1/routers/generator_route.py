@@ -91,7 +91,7 @@ async def job_offer_experiences(
         )
         return JobOfferDetails(
             jobOfferExperiences=exps,
-            jobOfferSofSkills=ss,
+            jobOfferSoftSkills=ss,
         )
     except asyncio.exceptions.TimeoutError:
         raise UnprocessedRequestError(

@@ -7,4 +7,4 @@ class Resumer(BaseModel):
 
 class JobOfferDetails(BaseModel):
     jobOfferExperiences: str = Field(description="The experiences/hard-skills required")
-    jobOfferSofSkills: str = Field(description="The softskill required")
+    jobOfferSoftSkills: str = Field(description="The softskill required")
